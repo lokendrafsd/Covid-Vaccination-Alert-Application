@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class RegisterAlertService {
 
-  private baseUrl = 'http://localhost:8080/vaccination/register-alert';
+  private baseUrl = 'http://localhost:8080/vaccination';
 
   private cowinUrl = 'https://cdn-api.co-vin.in/api/v2/admin/location';
 
@@ -24,7 +24,11 @@ export class RegisterAlertService {
   registerAlert(request: Object): Observable<Object> {
     const headers = new HttpHeaders()
             .set("Content-Type", "application/json");
-    return this.http.post(`${this.baseUrl}`, request, {headers});
+    return this.http.post(`${this.baseUrl}/register-alert`, request, {headers});
+  }
+
+  deregisterAlert(email: String): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/deregister-alert/${email}`);
   }
 
 

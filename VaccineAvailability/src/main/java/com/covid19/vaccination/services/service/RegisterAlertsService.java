@@ -1,10 +1,14 @@
 package com.covid19.vaccination.services.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.covid19.vaccination.services.model.AlertRequestDto;
 import com.covid19.vaccination.services.repository.AlertsRepository;
+import com.covid19.vaccination.services.utils.MessageGenerator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,25 +27,24 @@ public class RegisterAlertsService {
 				.concat(alertInfo.getName()).concat(", Please do Stay Safe.");
 		try {
 			repository.save(alertInfo);
-			emailService.sendSimpleMessage(alertInfo.getEmailId(), subject, getMessage(alertInfo));
+			emailService.sendSimpleMessage(alertInfo.getEmailId(), subject,
+					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 	}
 
-	private String getMessage(AlertRequestDto alertInfo) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Hi ").append(alertInfo.getName()).append(",").append("\n\n");
-		sb.append("You are successfully registered for Vaccination availability alerts for the mentioned state.");
-		sb.append(
-				" Meanwhile, while we will keep looking for the available slots and notify you as soon as we find any, ");
-		sb.append("we request you to stay safe and follow all the precautionary measures, This time shall pass too.");
-		sb.append(" We appreciate your trust in us to notify you.");
-		sb.append(
-				"\n\nNote: In case if you would want to de-register from the alerts, Please reply back to this mail with <STOP ALERTS> as a message");
-		sb.append("\n\n").append("Thank You!").append("\nTeam that cares for India");
-		log.info("Registration Successful Message: {}", sb.toString());
-		return sb.toString();
+	public void deregisterAlert(String email) {
+		List<AlertRequestDto> alertinfo = repository.findAllUsersBasedOnEmail(email);
+		if (!CollectionUtils.isEmpty(alertinfo)) {
+			alertinfo.stream().forEach(alert -> repository.deleteById(alert.getId()));
+			emailService.sendSimpleMessage(email, "Vaccination Availability Alerts De-Registered Successfully, Thank You!",
+					MessageGenerator.getDeRegisteredSuccessfullyMessage());
+			log.info("Alert Deactivated for Email: {}", email);
+		} else {
+			log.info("No Record found with Email: {}", email);
+		}
+
 	}
 
 }

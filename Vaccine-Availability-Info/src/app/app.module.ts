@@ -10,7 +10,7 @@ import { RegisterAlertComponent } from './register-alert/register-alert.componen
 @NgModule({
   declarations: [
     AppComponent,
-    RegisterAlertComponent
+    RegisterAlertComponent,
   ],
   imports: [
     BrowserModule,

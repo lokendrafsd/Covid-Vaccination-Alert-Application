@@ -1,8 +1,12 @@
 package com.covid19.vaccination.services.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +32,13 @@ public class RegisterAlertsController {
 	public ResponseEntity registerAlert(@RequestBody AlertRequestDto alertInfo) throws JsonProcessingException {
 		log.info("Received Request for Alert activation: {}", new ObjectMapper().writeValueAsString(alertInfo));
 		service.registerAlert(alertInfo);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/deregister-alert/{email}")
+	public ResponseEntity deleteEmployee(@PathVariable(value = "email") String email) {
+		log.info("Received Request for Alert de-activation for: {}", email);
+		service.deregisterAlert(email);
 		return ResponseEntity.ok().build();
 	}
 
