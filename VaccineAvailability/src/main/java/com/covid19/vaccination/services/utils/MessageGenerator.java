@@ -18,8 +18,6 @@ public class MessageGenerator {
 					" Meanwhile, while we will keep looking for the available slots and notify you as soon as we find any, ");
 			sb.append("we request you to stay safe and follow all the precautionary measures, This time shall pass too.");
 			sb.append(" We appreciate your trust in us to notify you.");
-			sb.append(
-					"\n\nNote: In case if you would want to de-register from the alerts, Please reply back to this mail with <STOP ALERTS> as a message");
 			sb.append("\n\n").append("Thank You!").append("\nTeam that cares for You");
 			log.info("Registration Successful Message: {}", sb.toString());
 			return sb.toString();

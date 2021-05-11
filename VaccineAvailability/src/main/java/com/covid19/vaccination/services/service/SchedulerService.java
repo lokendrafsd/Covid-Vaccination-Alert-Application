@@ -15,7 +15,7 @@ public class SchedulerService {
 	@Autowired
 	RestCallService service; 
 	
-	@Scheduled(cron =  "*/60 * * * * *")
+	@Scheduled(cron =  "*/30 * * * * *")
 	public void start() {
 		System.out.println("Scheduler Executing");
 		service.checkVaccineAvailability();

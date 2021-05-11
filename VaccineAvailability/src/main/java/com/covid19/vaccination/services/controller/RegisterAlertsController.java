@@ -1,11 +1,10 @@
 package com.covid19.vaccination.services.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +26,11 @@ public class RegisterAlertsController {
 
 	@Autowired
 	RegisterAlertsService service;
+	
+	@GetMapping("/status")
+	public String getStatus()  {
+		return "Service is up";
+	}
 
 	@PostMapping("/register-alert")
 	public ResponseEntity registerAlert(@RequestBody AlertRequestDto alertInfo) throws JsonProcessingException {

@@ -2,9 +2,8 @@ package com.covid19.vaccination.services.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import com.covid19.vaccination.services.model.AlertRequestDto;
 import com.covid19.vaccination.services.model.AlertsResponse;
 import com.covid19.vaccination.services.model.Centers;
+import com.covid19.vaccination.services.model.FinalResponse;
+import com.covid19.vaccination.services.model.Slots;
 import com.covid19.vaccination.services.repository.AlertsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,11 +46,15 @@ public class RestCallService {
 	static String currentDate;
 
 	static ObjectMapper mapper = new ObjectMapper();
+	
+	static int totalSl;
+
 
 	static {
 		LocalDate date = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-YYYY");
 		currentDate = formatter.format(date);
+		totalSl = 0;
 
 		mapper.writerWithDefaultPrettyPrinter();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -69,13 +74,11 @@ public class RestCallService {
 
 			log.info("Get Vaccination Information call with headers: {} " + entity);
 
-			// RestTemplate omiRestTemplate = new RestTemplate();
 			ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
 					AlertsResponse.class);
 			try {
 				log.info("Response Received: {}", new ObjectMapper().writeValueAsString(response.getBody()));
 			} catch (JsonProcessingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			processReponse(response.getBody(), alert);
@@ -113,27 +116,51 @@ public class RestCallService {
 
 	private HttpHeaders getHeaders() {
 		HttpHeaders headers = new HttpHeaders();
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
 		return headers;
 	}
 
 	private String getEmailResponse(List<Centers> centers, String state, String city, AlertRequestDto alert) {
-		Map<String, Integer> frequencyMap = new HashMap<>();
-		centers.stream().forEach(center -> center.getSessions().stream().forEach(states -> {
-			if (frequencyMap.containsKey(states.getDate())) {
-				frequencyMap.put(states.getDate(), frequencyMap.get(states.getDate()) + states.getAvailable_capacity());
-			} else {
-				frequencyMap.put(states.getDate(), states.getAvailable_capacity());
-			}
-		}));
+		totalSl = 0;
+		String dl = "\n--------------------------------------------------- \n";
+		List<FinalResponse> finalResponseList = new ArrayList<>();
+
+		centers.stream().forEach(ele -> {
+			FinalResponse response = new FinalResponse();
+			List<Slots> slots = new ArrayList<>();
+			response.setAddress(ele.getAddress());
+			response.setDistrict_name(ele.getDistrict_name());
+			response.setState_name(ele.getState_name());
+
+			ele.getSessions().stream().forEach(x -> {
+				Slots sl = new Slots();
+				sl.setDate(x.getDate());
+				sl.setVaccineSlots(x.getAvailable_capacity());
+				totalSl += x.getAvailable_capacity();
+				slots.add(sl);
+			});
+			response.setVaccinationSlots(slots);
+			finalResponseList.add(response);
+		});
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Hi ").append(alert.getName());
 		sb.append("\n\nTotal Vaccination Slots available for ").append(state).append(", ").append(city).append(" - ")
-				.append(String.valueOf(frequencyMap.values().stream().reduce(0, (a, b) -> a + b))).append("\n");
+				.append(String.valueOf(totalSl)).append("\n");
+		sb.append("\nPlease visit https://www.cowin.gov.in/home to book your vaccination slots. \n");
 
-		frequencyMap.entrySet().stream().filter(ele -> ele.getValue() != 0).forEach(
-				ele -> sb.append("\nVaccination Slot: ").append(ele.getKey()).append(" : ").append(ele.getValue()));
+		finalResponseList.stream().forEach(resp -> {
+			sb.append(dl);
+			sb.append("\nAddress: ").append(resp.getAddress());
+			sb.append("\nState\t  : ").append(resp.getDistrict_name()).append(", ").append(resp.getState_name());
+			
+			resp.getVaccinationSlots().stream().forEach(slot->{
+				sb.append("\n   -Date  : ").append(slot.getDate());
+				sb.append("\n   -Slots : ").append(slot.getVaccineSlots()).append("\n");
+			});
+		});
 
 		return sb.toString();
 	}

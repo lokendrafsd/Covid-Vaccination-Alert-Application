@@ -30,7 +30,7 @@ public class RegisterAlertsService {
 			emailService.sendSimpleMessage(alertInfo.getEmailId(), subject,
 					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("Error while registering for alerts: {}, {}", e.getLocalizedMessage(), e);
 		}
 	}
 
