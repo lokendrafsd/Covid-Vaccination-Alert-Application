@@ -16,8 +16,8 @@ public class MailSenderConfig {
 	    mailSender.setHost("smtp.gmail.com");
 	    mailSender.setPort(587);
 	    
-	    mailSender.setUsername("testmail");
-	    mailSender.setPassword("testpass");
+	    mailSender.setUsername("AditiVaccineNotifier@gmail.com");
+	    mailSender.setPassword("Aditi@123&");
 	    
 	    Properties props = mailSender.getJavaMailProperties();
 	    props.put("mail.transport.protocol", "smtp");

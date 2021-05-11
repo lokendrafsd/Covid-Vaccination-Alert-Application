@@ -18,7 +18,7 @@ public class MessageGenerator {
 					" Meanwhile, while we will keep looking for the available slots and notify you as soon as we find any, ");
 			sb.append("we request you to stay safe and follow all the precautionary measures, This time shall pass too.");
 			sb.append(" We appreciate your trust in us to notify you.");
-			sb.append("\n\n").append("Thank You!").append("\nTeam that cares for You");
+			sb.append("\n\n").append("Thank You!").append("\nAditi Family").append("\n~ Developed by Team Adhigam");
 			log.info("Registration Successful Message: {}", sb.toString());
 			return sb.toString();
 		}
@@ -29,7 +29,7 @@ public class MessageGenerator {
 		sb.append("You have successfully De-Registered for Vaccination availability alerts.");
 		sb.append("We request you to stay safe and follow all the precautionary measures, This time shall pass too.");
 		sb.append(" We appreciate your trust in us to notify you.");
-		sb.append("\n\n").append("Thank You!").append("\nTeam that cares for You");
+		sb.append("\n\n").append("Thank You!").append("\nAditi Family").append("\n~ Developed by Team Adhigam");
 		log.info("De-Registration Successful Message: {}", sb.toString());
 		return sb.toString();
 	}

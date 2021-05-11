@@ -8,13 +8,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
@@ -24,30 +22,31 @@ import com.covid19.vaccination.services.model.AlertsResponse;
 import com.covid19.vaccination.services.model.Centers;
 import com.covid19.vaccination.services.model.FinalResponse;
 import com.covid19.vaccination.services.model.Slots;
-import com.covid19.vaccination.services.repository.AlertsRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class RestCallService {
+@NoArgsConstructor
+public class HelperService extends Thread {
 
-	@Autowired
-	RestTemplate restTemplate;
-
-	@Value("${vaccination.url}")
-	private String url;
-
-	@Autowired
-	EmailService emailService;
+	EmailService emailService = new EmailService();
 
 	static String currentDate;
 
 	static ObjectMapper mapper = new ObjectMapper();
 
 	static int totalSl;
+
+	private String url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?";
+
+	private AlertRequestDto alertRequestDto;
+
+	RestTemplate restTemplate = new RestTemplate();
 
 	static {
 		LocalDate date = LocalDate.now();
@@ -59,21 +58,20 @@ public class RestCallService {
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
-	@Autowired
-	AlertsRepository repository;
+	public HelperService(AlertRequestDto alertRequestDto) {
+		this.alertRequestDto = alertRequestDto;
+	}
 
-	public void checkVaccineAvailability() {
-		List<AlertRequestDto> alerts = repository.findAll();
-		alerts.parallelStream().forEach(alert -> {
-			processAlerts(alert);
-		});
+	public void run() {
+		log.info("--- Running a thread");
+		processAlert(alertRequestDto);
 	}
 
 	/**
 	 * @param alert
 	 */
-	@Async("threadPoolTaskExecutor")
-	private void processAlerts(AlertRequestDto alert) {
+
+	private void processAlert(AlertRequestDto alert) {
 		String apiUrl = urlBuilder(alert.getDistrictId());
 		HttpHeaders headers = getHeaders();
 		String requestData = StringUtils.EMPTY;
@@ -81,17 +79,31 @@ public class RestCallService {
 		HttpEntity entity = new HttpEntity<>(requestData, headers);
 
 		log.info("Get Vaccination Information call with headers: {} " + entity);
-		try{
-			ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
-					AlertsResponse.class);
-			log.info("Response Received with status: {}", response.getStatusCode());
-			if(response.getStatusCodeValue()>=200&&response.getStatusCodeValue()<400) {
-				processReponse(response.getBody(), alert);
-			}
-		}catch(Exception ex) {
-			log.error("Error Occurred while making api call to cowin-app: {}, {}",ex.getMessage(), ex);
+
+		ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
+				AlertsResponse.class);
+		try {
+			log.info("Response Received: {}", new ObjectMapper().writeValueAsString(response.getBody()));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
-		
+		processReponse(response.getBody(), alert);
+	}
+
+	private String urlBuilder(int districtId) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(url).append("district_id=").append(districtId).append("&date=").append(currentDate);
+		String url = sb.toString();
+		log.info("URL: {}", url);
+		return url;
+	}
+
+	private HttpHeaders getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("user-agent",
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+		return headers;
 	}
 
 	private void processReponse(AlertsResponse response, AlertRequestDto alert) {
@@ -105,29 +117,14 @@ public class RestCallService {
 				String state = centers.get(0).getState_name();
 				String city = centers.get(0).getDistrict_name();
 				String resp = getEmailResponse(centers, state, city, alert);
-				log.info("Slots found, sending alerts");
+
+				log.info("Found a Vaccine Slot, Vaccination center Details are {}", resp);
 				emailService.sendSimpleMessage(alert.getEmailId(), alert.getFilterAge()
 						+ "+ Age Group: Vaccination Slot Available in: ".concat(state).concat(", ").concat(city), resp);
 			} else {
 				log.info("No Slots Found");
 			}
 		}
-	}
-
-	private String urlBuilder(int districtId) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(url).append("district_id=").append(districtId).append("&date=").append(currentDate);
-		String tempUrl = sb.toString();
-		log.info("URL: {}", tempUrl);
-		return tempUrl;
-	}
-
-	private HttpHeaders getHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("user-agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-		headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-		return headers;
 	}
 
 	private String getEmailResponse(List<Centers> centers, String state, String city, AlertRequestDto alert) {
@@ -170,8 +167,8 @@ public class RestCallService {
 			});
 		});
 
-		sb.append("\n\n").append("Thank You!").append("\nAditi Family").append("\n~ Developed by Team Adhigam");
-
+		sb.append("\n\n").append("Thank You!").append("\nAditi Family").append("\n~ Developed by Aditi Adhigam");
 		return sb.toString();
 	}
+
 }
