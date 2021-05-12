@@ -6,6 +6,9 @@
       alt="Card image cap"
     />
     <div *ngIf="isRegistrationActive" class="card-body p-5">
+      <div class="alert alert-success">
+        We collect your email address only for sending notifications.
+      </div>
       <div *ngIf="submitted" class="alert alert-success" role="alert">
         Registered successfully for Vaccination Alert!
       </div>
@@ -24,9 +27,7 @@
                 required
               />
               <div
-                *ngIf="
-                  myForm.controls.name.touched && myForm.controls.name.invalid
-                "
+                *ngIf="myForm.controls.name.touched && myForm.controls.name.invalid"
                 class="text-danger"
               >
                 <div>*Name is required</div>
