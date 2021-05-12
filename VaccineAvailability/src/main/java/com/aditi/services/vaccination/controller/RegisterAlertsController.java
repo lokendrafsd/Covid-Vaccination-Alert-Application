@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/vaccination")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://172.17.26.12:9090")
 public class RegisterAlertsController {
 
 	@Autowired

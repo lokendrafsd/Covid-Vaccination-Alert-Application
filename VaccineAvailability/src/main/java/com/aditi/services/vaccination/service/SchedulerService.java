@@ -17,7 +17,11 @@ public class SchedulerService {
 	
 	@Scheduled(cron =  "*/30 * * * * *")
 	public void start() {
-		System.out.println("Scheduler Executing");
-		service.checkVaccineAvailability();
+		try{
+			log.info("Executing Scheduler Service");
+			service.checkVaccineAvailability();
+		}catch(Exception e){
+			log.error("Exeception while executing scheduler {}", e);
+		}
 	}
 }

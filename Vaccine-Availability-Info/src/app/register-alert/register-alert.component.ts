@@ -49,12 +49,8 @@ export class RegisterAlertComponent implements OnInit {
   }
 
   loadDistricts() {
-    if (this.registerAlertsRequest.state) {
-      console.log("State Selected: ", this.registerAlertsRequest.state);
-    }
     this.service.getDistricts(this.registerAlertsRequest.state)
       .subscribe(data => {
-        console.log("District Data:" + data.states)
         this.districtData = data.districts;
       }, error => console.log(error));
   }
@@ -62,7 +58,6 @@ export class RegisterAlertComponent implements OnInit {
   save(form: any) {
     this.service
       .registerAlert(JSON.stringify(form)).subscribe(data => {
-        console.log("Submited Data: ", data)
         this.registerAlertsRequest = new RegisterAlertRequest();
         this.ngOnInit();
       },
@@ -71,11 +66,8 @@ export class RegisterAlertComponent implements OnInit {
 
 
   onSubmit(form: FormGroup) {
-    console.log("Form Submitted");
     this.submitted = true;
     if (form.valid) {
-      console.log("Form is valid");
-      console.log("Form data", form.value);
       this.save(form.value);
     }
   }
@@ -84,18 +76,15 @@ export class RegisterAlertComponent implements OnInit {
   deRegister(email:any) {
     this.service
     .deregisterAlert(email).subscribe(data => {
-      console.log("Submited Data: ", data)
+      console.log("De Registration Request Submitted")
     }, 
     error => console.log(error));
     this.isRegistrationActive = true;
   }
 
   onSubmitDeRegister(form: FormGroup) {
-    console.log("Form Submitted");
     this.Deregistersubmitted = true;
     if(form.valid){
-      console.log("Form is valid");
-      console.log("Form data",form.controls.emailId.value);
       this.deRegister(form.controls.emailId.value);
     }
   }
