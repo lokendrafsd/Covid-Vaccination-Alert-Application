@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.configurations;
+package com.aditi.services.vaccination.configurations;
 
 import java.util.Properties;
 

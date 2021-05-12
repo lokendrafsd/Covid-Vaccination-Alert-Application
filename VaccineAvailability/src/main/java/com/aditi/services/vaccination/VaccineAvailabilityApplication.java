@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services;
+package com.aditi.services.vaccination;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

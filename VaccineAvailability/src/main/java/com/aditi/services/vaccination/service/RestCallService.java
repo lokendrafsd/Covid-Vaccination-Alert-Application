@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.service;
+package com.aditi.services.vaccination.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,12 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.covid19.vaccination.services.model.AlertRequestDto;
-import com.covid19.vaccination.services.model.AlertsResponse;
-import com.covid19.vaccination.services.model.Centers;
-import com.covid19.vaccination.services.model.FinalResponse;
-import com.covid19.vaccination.services.model.Slots;
-import com.covid19.vaccination.services.repository.AlertsRepository;
+import com.aditi.services.vaccination.model.AlertRequestDto;
+import com.aditi.services.vaccination.model.AlertsResponse;
+import com.aditi.services.vaccination.model.Centers;
+import com.aditi.services.vaccination.model.FinalResponse;
+import com.aditi.services.vaccination.model.Slots;
+import com.aditi.services.vaccination.repository.AlertsRepository;
+import com.aditi.services.vaccination.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -63,10 +64,15 @@ public class RestCallService {
 	AlertsRepository repository;
 
 	public void checkVaccineAvailability() {
-		List<AlertRequestDto> alerts = repository.findAll();
-		alerts.parallelStream().forEach(alert -> {
-			processAlerts(alert);
-		});
+		try {
+			List<AlertRequestDto> alerts = repository.findAll();
+			alerts.parallelStream().forEach(alert -> processAlerts(alert));
+		} catch (Exception e) {
+			log.error("Error Occurred while making api call to cowin-app: {}, {}", e.getMessage(), e);
+			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
+					"Application Error Alert - Error Occurred while fetching db alerts request data and processing ",
+					e.toString());
+		}
 	}
 
 	/**
@@ -81,17 +87,19 @@ public class RestCallService {
 		HttpEntity entity = new HttpEntity<>(requestData, headers);
 
 		log.info("Get Vaccination Information call with headers: {} " + entity);
-		try{
+		try {
 			ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
 					AlertsResponse.class);
 			log.info("Response Received with status: {}", response.getStatusCode());
-			if(response.getStatusCodeValue()>=200&&response.getStatusCodeValue()<400) {
+			if (response.getStatusCodeValue() >= 200 && response.getStatusCodeValue() < 400) {
 				processReponse(response.getBody(), alert);
 			}
-		}catch(Exception ex) {
-			log.error("Error Occurred while making api call to cowin-app: {}, {}",ex.getMessage(), ex);
+		} catch (Exception ex) {
+			log.error("Error Occurred while making api call to cowin-app: {}, {}", ex.getMessage(), ex);
+			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
+					"Application Error Alert - Error Occurred while making api call to cowin-app: ", ex.toString());
 		}
-		
+
 	}
 
 	private void processReponse(AlertsResponse response, AlertRequestDto alert) {
@@ -170,7 +178,7 @@ public class RestCallService {
 			});
 		});
 
-		sb.append("\n\n").append("Thank You!").append("\nAditi Family").append("\n~ Developed by Team Adhigam");
+		sb.append(Constants.MAIL_SIGNATURE);
 
 		return sb.toString();
 	}

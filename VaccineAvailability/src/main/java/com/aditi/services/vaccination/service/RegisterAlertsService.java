@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.service;
+package com.aditi.services.vaccination.service;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.covid19.vaccination.services.model.AlertRequestDto;
-import com.covid19.vaccination.services.repository.AlertsRepository;
-import com.covid19.vaccination.services.utils.MessageGenerator;
+import com.aditi.services.vaccination.model.AlertRequestDto;
+import com.aditi.services.vaccination.repository.AlertsRepository;
+import com.aditi.services.vaccination.utils.MessageGenerator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +31,8 @@ public class RegisterAlertsService {
 					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
 			log.error("Error while registering for alerts: {}, {}", e.getLocalizedMessage(), e);
+			emailService.sendSimpleMessage("lokendrakumar.vk@gmail.com", "Application Error Alert - Unable to register",
+					e.toString());
 		}
 	}
 

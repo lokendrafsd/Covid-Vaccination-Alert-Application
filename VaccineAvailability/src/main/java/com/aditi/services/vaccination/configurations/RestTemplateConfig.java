@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.configurations;
+package com.aditi.services.vaccination.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

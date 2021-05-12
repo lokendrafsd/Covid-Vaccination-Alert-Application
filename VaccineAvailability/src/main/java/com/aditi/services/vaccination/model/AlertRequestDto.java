@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.model;
+package com.aditi.services.vaccination.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

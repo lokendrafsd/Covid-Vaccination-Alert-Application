@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.service;
+package com.aditi.services.vaccination.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;

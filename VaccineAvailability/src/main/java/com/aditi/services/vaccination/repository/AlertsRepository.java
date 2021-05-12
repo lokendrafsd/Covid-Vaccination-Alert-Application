@@ -1,4 +1,4 @@
-package com.covid19.vaccination.services.repository;
+package com.aditi.services.vaccination.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.covid19.vaccination.services.model.AlertRequestDto;
+import com.aditi.services.vaccination.model.AlertRequestDto;
 
 @Repository
 public interface AlertsRepository extends JpaRepository<AlertRequestDto, Long> {
