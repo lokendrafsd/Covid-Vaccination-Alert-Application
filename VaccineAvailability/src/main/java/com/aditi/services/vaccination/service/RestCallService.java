@@ -91,11 +91,11 @@ public class RestCallService {
 			ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
 					AlertsResponse.class);
 			log.info("Response Received with status: {}", response.getStatusCode());
-			if (response.getStatusCodeValue() >= 200 && response.getStatusCodeValue() < 400) {
+			if (response.getStatusCodeValue() == 200 ) {
 				processReponse(response.getBody(), alert);
 			}
 		} catch (Exception ex) {
-			log.error("Error Occurred while making api call to cowin-app: {}, {}", ex.getMessage(), ex);
+			log.error("Error Occurred while making api call to cowin-app: {}", ex);
 			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
 					"Application Error Alert - Error Occurred while making api call to cowin-app: ", ex.toString());
 		}

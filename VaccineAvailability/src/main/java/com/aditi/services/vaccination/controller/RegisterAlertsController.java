@@ -21,14 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequestMapping("/vaccination")
-@CrossOrigin(origins = "http://172.17.26.12:9090")
+@CrossOrigin(origins = "*")
 public class RegisterAlertsController {
 
 	@Autowired
 	RegisterAlertsService service;
-	
+
 	@GetMapping("/status")
-	public String getStatus()  {
+	public String getStatus() {
 		return "Service is up";
 	}
 
@@ -36,14 +36,23 @@ public class RegisterAlertsController {
 	public ResponseEntity registerAlert(@RequestBody AlertRequestDto alertInfo) throws JsonProcessingException {
 		log.info("Received Request for Alert activation: {}", new ObjectMapper().writeValueAsString(alertInfo));
 		service.registerAlert(alertInfo);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body("Successfully registered alerts");
 	}
 
 	@DeleteMapping("/deregister-alert/{email}")
-	public ResponseEntity deleteEmployee(@PathVariable(value = "email") String email) {
+	public ResponseEntity deRegisterAlert(@PathVariable(value = "email") String email) {
 		log.info("Received Request for Alert de-activation for: {}", email);
 		service.deregisterAlert(email);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body("Successfully Deactivated from alerts");
+	}
+
+	@PostMapping("/register-mail-details/{uname}/{passcode}")
+	public ResponseEntity registerMailDetails(@PathVariable("uname") String uname,
+			@PathVariable("passcode") String passcode) {
+		System.setProperty("uname", uname);
+		System.setProperty("passcode", passcode);
+		log.info("Credentials Set");
+		return ResponseEntity.ok().body("Successfully Set the details");
 	}
 
 }

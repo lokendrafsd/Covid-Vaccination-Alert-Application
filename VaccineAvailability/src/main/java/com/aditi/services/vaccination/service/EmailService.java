@@ -1,8 +1,9 @@
 package com.aditi.services.vaccination.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 public class EmailService {
 
 	@Autowired
-	private JavaMailSender emailSender;
+	private JavaMailSenderImpl emailSender;
+
+	@Autowired
+	Environment environment;
 
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
@@ -20,7 +24,14 @@ public class EmailService {
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
-		emailSender.send(message);
+		if (environment.containsProperty("uname")) {
+			emailSender.setUsername(environment.getProperty("uname"));
+			emailSender.setPassword(environment.getProperty("passcode"));
+			emailSender.send(message);
+			log.info("Email Sent to: {}", to);
+			return;
+		}
+		log.warn("Credentials not available, please update the credentials using /register-mail-details/uname/passcode");
 	}
 
 }
