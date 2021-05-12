@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 172.17.26.12 --port 9090",
-    "build": "ng build",
+    "start": "ng serve --proxy-config proxy.conf.json --host 0.0.0.0 --port 9090 ",
+    "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
