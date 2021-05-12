@@ -1,13 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { getBaseUrl } from './app.module';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterAlertService {
-
-  private baseUrl = 'http://localhost:8080/vaccination';
 
   private cowinUrl = 'https://cdn-api.co-vin.in/api/v2/admin/location';
 
@@ -21,14 +20,14 @@ export class RegisterAlertService {
     return this.http.get(`${this.cowinUrl}/states`);
   }
 
-  registerAlert(request: Object): Observable<Object> {
+  registerAlert(request: Object, @Inject(BASE_URL) baseUrl: string): Observable<Object> {
     const headers = new HttpHeaders()
             .set("Content-Type", "application/json");
-    return this.http.post(`${this.baseUrl}/register-alert`, request, {headers});
+    return this.http.post(baseUrl+'vaccination/register-alert', request, {headers});
   }
 
-  deregisterAlert(email: String): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/deregister-alert/${email}`);
+  deregisterAlert(email: String, @Inject(BASE_URL) baseUrl: string): Observable<any> {
+    return this.http.delete(baseUrl+'/vaccination/deregister-alert/${email}');
   }
 
 

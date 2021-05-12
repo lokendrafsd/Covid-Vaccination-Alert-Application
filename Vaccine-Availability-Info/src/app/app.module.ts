@@ -19,7 +19,12 @@ import { RegisterAlertComponent } from './register-alert/register-alert.componen
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    {provide :'BASE_URL', usefactory: getBaseUrl}
+  ],
   bootstrap: [AppComponent]
 })
+export function getBaseUrl() {
+    return document.getElementsByTagName('base')[0].href;
+}
 export class AppModule { }
