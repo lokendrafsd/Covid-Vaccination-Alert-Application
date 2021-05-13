@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.aditi.services.vaccination.model.AlertRequestDto;
 import com.aditi.services.vaccination.repository.AlertsRepository;
+import com.aditi.services.vaccination.utils.Constants;
 import com.aditi.services.vaccination.utils.MessageGenerator;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,8 @@ public class RegisterAlertsService {
 			emailService.sendSimpleMessage(alertInfo.getEmailId(), subject,
 					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
-			log.error("Error while registering for alerts: {}, {}", e.getLocalizedMessage(), e);
-			emailService.sendSimpleMessage("lokendrakumar.vk@gmail.com", "Application Error Alert - Unable to register",
+			log.error("Error while registering for alerts: {}", e);
+			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER, "Application Error Alert - Unable to register",
 					e.toString());
 		}
 	}

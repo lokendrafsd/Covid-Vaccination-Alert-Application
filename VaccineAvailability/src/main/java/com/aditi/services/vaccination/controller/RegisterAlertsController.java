@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aditi.services.vaccination.model.AlertRequestDto;
+import com.aditi.services.vaccination.model.MailCredential;
+import com.aditi.services.vaccination.service.EmailService;
 import com.aditi.services.vaccination.service.RegisterAlertsService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +28,9 @@ public class RegisterAlertsController {
 
 	@Autowired
 	RegisterAlertsService service;
+	
+	@Autowired
+	EmailService emailService;
 
 	@GetMapping("/status")
 	public String getStatus() {
@@ -34,7 +39,7 @@ public class RegisterAlertsController {
 
 	@PostMapping("/register-alert")
 	public ResponseEntity registerAlert(@RequestBody AlertRequestDto alertInfo) throws JsonProcessingException {
-		log.info("Received Request for Alert activation: {}", new ObjectMapper().writeValueAsString(alertInfo));
+		log.info("Received Request for Alert activation: {}", alertInfo);
 		service.registerAlert(alertInfo);
 		return ResponseEntity.ok().body("Successfully registered alerts");
 	}
@@ -46,11 +51,9 @@ public class RegisterAlertsController {
 		return ResponseEntity.ok().body("Successfully Deactivated from alerts");
 	}
 
-	@PostMapping("/register-mail-details/{uname}/{passcode}")
-	public ResponseEntity registerMailDetails(@PathVariable("uname") String uname,
-			@PathVariable("passcode") String passcode) {
-		System.setProperty("uname", uname);
-		System.setProperty("passcode", passcode);
+	@PostMapping("/register-mail-details")
+	public ResponseEntity registerMailDetails(@RequestBody MailCredential mailCredential) {
+		emailService.setMailCredential(mailCredential);
 		log.info("Credentials Set");
 		return ResponseEntity.ok().body("Successfully Set the details");
 	}
