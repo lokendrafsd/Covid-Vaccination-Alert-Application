@@ -68,7 +68,7 @@ public class RestCallService {
 			List<AlertRequestDto> alerts = repository.findAll();
 			alerts.parallelStream().forEach(alert -> processAlerts(alert));
 		} catch (Exception e) {
-			log.error("Error Occurred while making api call to cowin-app: {}", e);
+			log.error("Error Occurred while making api call to cowin-app: ", e);
 			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
 					"Application Error Alert - Error Occurred while fetching db alerts request data and processing ",
 					e.toString());
@@ -86,7 +86,7 @@ public class RestCallService {
 
 		HttpEntity entity = new HttpEntity<>(requestData, headers);
 
-		log.info("Get Vaccination Information call with headers: {} " + entity);
+		log.info("Get Vaccination Information call with headers: {} ", entity);
 		try {
 			ResponseEntity<AlertsResponse> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity,
 					AlertsResponse.class);
@@ -95,7 +95,7 @@ public class RestCallService {
 				processReponse(response.getBody(), alert);
 			}
 		} catch (Exception ex) {
-			log.error("Error Occurred while making api call to cowin-app: {}", ex);
+			log.error("Error Occurred while making api call to cowin-app: ", ex);
 			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
 					"Application Error Alert - Error Occurred while making api call to cowin-app: ", ex.toString());
 		}

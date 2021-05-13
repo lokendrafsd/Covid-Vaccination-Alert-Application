@@ -22,11 +22,11 @@ public class EmailService {
 
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(mailCredential.getEmail());
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
 		if (!mailCredential.getEmail().isEmpty()) {
+			message.setFrom(mailCredential.getEmail());
 			emailSender.setHost(mailCredential.getHost());
 			emailSender.setPort(mailCredential.getPort());
 			emailSender.setUsername(mailCredential.getEmail());
