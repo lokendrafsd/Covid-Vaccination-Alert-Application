@@ -68,7 +68,7 @@ public class RestCallService {
 			List<AlertRequestDto> alerts = repository.findAll();
 			alerts.parallelStream().forEach(alert -> processAlerts(alert));
 		} catch (Exception e) {
-			log.error("Error Occurred while making api call to cowin-app: {}, {}", e.getMessage(), e);
+			log.error("Error Occurred while making api call to cowin-app: {}", e);
 			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
 					"Application Error Alert - Error Occurred while fetching db alerts request data and processing ",
 					e.toString());

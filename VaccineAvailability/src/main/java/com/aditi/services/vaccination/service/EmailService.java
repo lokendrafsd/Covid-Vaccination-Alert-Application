@@ -6,6 +6,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
+import com.aditi.services.vaccination.model.MailCredential;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -14,26 +16,32 @@ public class EmailService {
 
 	@Autowired
 	private JavaMailSenderImpl emailSender;
-
-	@Autowired
-	Environment environment;
+	
+	private MailCredential mailCredential;
+	
 
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom(environment.getProperty("uname"));
+		message.setFrom(mailCredential.getEmail());
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
-		if (environment.containsProperty("uname")) {
-			emailSender.setHost(environment.getProperty("host"));
-			emailSender.setPort(Integer.parseInt(environment.getProperty("port")));
-			emailSender.setUsername(environment.getProperty("uname"));
-			emailSender.setPassword(environment.getProperty("passcode"));
+		if (!mailCredential.getEmail().isEmpty()) {
+			emailSender.setHost(mailCredential.getHost());
+			emailSender.setPort(mailCredential.getPort());
+			emailSender.setUsername(mailCredential.getEmail());
+			emailSender.setPassword(mailCredential.getPassword());
 			emailSender.send(message);
 			log.info("Email Sent to: {}", to);
 			return;
 		}
 		log.warn("Credentials not available, please update the credentials using /register-mail-details/uname/passcode");
+	}
+
+
+	public void setMailCredential(MailCredential tempmailCredential) {
+		mailCredential = tempmailCredential;
+		
 	}
 
 }

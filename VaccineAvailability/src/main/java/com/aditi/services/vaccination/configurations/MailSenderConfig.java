@@ -2,17 +2,12 @@ package com.aditi.services.vaccination.configurations;
 
 import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
 public class MailSenderConfig {
-	
-	@Autowired
-	Environment environment;
 
 	@Bean
 	public JavaMailSenderImpl getJavaMailSender() {
