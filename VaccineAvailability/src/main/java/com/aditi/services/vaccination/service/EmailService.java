@@ -20,11 +20,13 @@ public class EmailService {
 
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
-		message.setFrom("AditiVaccineNotifier@gmail.com");
+		message.setFrom(environment.getProperty("uname"));
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
 		if (environment.containsProperty("uname")) {
+			emailSender.setHost(environment.getProperty("host"));
+			emailSender.setPort(Integer.parseInt(environment.getProperty("port")));
 			emailSender.setUsername(environment.getProperty("uname"));
 			emailSender.setPassword(environment.getProperty("passcode"));
 			emailSender.send(message);

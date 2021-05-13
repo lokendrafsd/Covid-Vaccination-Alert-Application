@@ -46,11 +46,13 @@ public class RegisterAlertsController {
 		return ResponseEntity.ok().body("Successfully Deactivated from alerts");
 	}
 
-	@PostMapping("/register-mail-details/{uname}/{passcode}")
+	@PostMapping("/register-mail-details/{uname}/{passcode}/{host}/{port}")
 	public ResponseEntity registerMailDetails(@PathVariable("uname") String uname,
-			@PathVariable("passcode") String passcode) {
+			@PathVariable("passcode") String passcode,@PathVariable String host,@PathVariable String port) {
 		System.setProperty("uname", uname);
 		System.setProperty("passcode", passcode);
+		System.setProperty("host", host);
+		System.setProperty("port", port);
 		log.info("Credentials Set");
 		return ResponseEntity.ok().body("Successfully Set the details");
 	}
