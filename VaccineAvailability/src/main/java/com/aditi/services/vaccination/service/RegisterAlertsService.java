@@ -3,6 +3,7 @@ package com.aditi.services.vaccination.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -18,10 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 public class RegisterAlertsService {
 
 	@Autowired
-	AlertsRepository repository;
+	private AlertsRepository repository;
 
 	@Autowired
-	EmailService emailService;
+	private EmailService emailService;
+	
+	@Value("${Send.Email.On.Error}")
+	private String errorAlertsUser;
 
 	public void registerAlert(AlertRequestDto alertInfo) {
 		String subject = "Vaccination Availability Alerts Registered Successfully, Thank You! "
@@ -32,7 +36,7 @@ public class RegisterAlertsService {
 					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
 			log.error("Error while registering for alerts: {}", e);
-			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER, "Application Error Alert - Unable to register",
+			emailService.sendSimpleMessage(errorAlertsUser, "Application Error Alert - Unable to register",
 					e.toString());
 		}
 	}
