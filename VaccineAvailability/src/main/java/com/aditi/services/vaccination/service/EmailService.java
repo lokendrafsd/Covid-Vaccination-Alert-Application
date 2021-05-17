@@ -17,16 +17,15 @@ public class EmailService {
 	@Autowired
 	private JavaMailSenderImpl emailSender;
 	
-	private MailCredential mailCredential;
-	
+	private MailCredential mailCredential;	
 
 	public void sendSimpleMessage(String to, String subject, String text) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setSubject(subject);
 		message.setText(text);
-		if (!mailCredential.getEmail().isEmpty()) {
-			message.setFrom(mailCredential.getEmail());
+		if (mailCredential!= null && !mailCredential.getEmail().isEmpty()) {
+			message.setFrom("NO_REPLY@aditiconsulting.com");
 			emailSender.setHost(mailCredential.getHost());
 			emailSender.setPort(mailCredential.getPort());
 			emailSender.setUsername(mailCredential.getEmail());
