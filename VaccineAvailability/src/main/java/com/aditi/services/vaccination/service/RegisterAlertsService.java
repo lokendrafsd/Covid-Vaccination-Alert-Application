@@ -36,8 +36,6 @@ public class RegisterAlertsService {
 					MessageGenerator.getRegisteredSuccessfullyMessage(alertInfo));
 		} catch (Exception e) {
 			log.error("Error while registering for alerts: {}", e);
-			emailService.sendSimpleMessage(errorAlertsUser, "Application Error Alert - Unable to register",
-					e.toString());
 		}
 	}
 
