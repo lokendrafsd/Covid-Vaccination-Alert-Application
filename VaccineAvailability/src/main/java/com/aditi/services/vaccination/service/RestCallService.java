@@ -40,6 +40,9 @@ public class RestCallService {
 
 	@Value("${vaccination.url}")
 	private String url;
+	
+	@Value("${Send.Email.On.Error}")
+	private String errorAlertsUser;
 
 	@Autowired
 	EmailService emailService;
@@ -69,7 +72,7 @@ public class RestCallService {
 			alerts.parallelStream().forEach(alert -> processAlerts(alert));
 		} catch (Exception e) {
 			log.error("Error Occurred while making api call to cowin-app: ", e);
-			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
+			emailService.sendSimpleMessage(errorAlertsUser,
 					"Application Error Alert - Error Occurred while fetching db alerts request data and processing ",
 					e.toString());
 		}
@@ -96,7 +99,7 @@ public class RestCallService {
 			}
 		} catch (Exception ex) {
 			log.error("Error Occurred while making api call to cowin-app: ", ex);
-			emailService.sendSimpleMessage(Constants.ERROR_ALERTS_USER,
+			emailService.sendSimpleMessage(errorAlertsUser,
 					"Application Error Alert - Error Occurred while making api call to cowin-app: ", ex.toString());
 		}
 
